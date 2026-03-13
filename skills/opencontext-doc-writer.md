@@ -27,10 +27,10 @@ agents can retrieve it later with `opencontext get` or `opencontext search`.
 
 1. **Gather information** — understand what needs to be documented
 2. **Determine the store** — local (personal) or team (shared repo)
-3. **Define the id** — choose a namespaced id that reflects the content hierarchy
+3. **Define the entry id** — choose an `author/name` pair
 4. **Write the file** — frontmatter + structured markdown body
 5. **Register it** — run `opencontext add <path>` or `opencontext add <path> --team`
-6. **Verify** — run `opencontext get <id>` to confirm it was registered correctly
+6. **Verify** — run `opencontext get <author>/<name>` to confirm it was registered correctly
 
 ---
 
@@ -62,50 +62,66 @@ Default to **local** unless the user explicitly says "team" or "shared".
 
 ---
 
-## Step 3 — Define the `id`
+## Step 3 — Define the entry id (author/name)
 
-The `id` is the most important field. It determines:
-- How the doc is retrieved (`opencontext get <id>`)
-- Where the file is stored on disk (each `/` becomes a subdirectory)
+Entries are identified by `author/name`, derived from the directory structure and
+the `name` field in frontmatter. It determines:
+- How the doc is retrieved (`opencontext get author/name`)
+- The full folder path on disk: `author/docs/name/DOC.md`
 
 **Rules:**
 - Use lowercase, hyphens for spaces, no special characters
-- Use `/` to create hierarchy (provider, category, doc name)
-- Be specific enough to avoid collisions, but not overly long
-- The last segment should be the document name
+- Keep `name` specific and stable
+- Use `author` as vendor/org/team namespace
 
-**Id structure pattern:**
+**Entry id pattern:**
 ```
-<provider-or-domain>/<category>/<doc-name>
+<author>/<name>
 ```
+
+**File naming rule — no exceptions:**
+```
+author/docs/name/DOC.md
+```
+
+The filename is **always `DOC.md`**, regardless of the content.
 
 **Examples:**
 
-| Content | Good id |
-|---------|---------|
-| Zapsign Python SDK | `zapsign/python/zapsign-docs` |
-| Internal auth API | `internal/auth/auth-api` |
-| Team deploy guide | `internal/infra/deploy` |
-| OpenAI chat completion | `openai/chat` |
-| Stripe webhook setup | `stripe/webhooks` |
-| Code review conventions | `team/conventions/code-review` |
+| Content | Entry id | Resulting file path (local) |
+|---------|----------|-----------------------------|
+| Zapsign Python SDK | `zapsign/zapsign-docs` | `.../zapsign/docs/zapsign-docs/DOC.md` |
+| Internal auth API | `internal/auth-api` | `.../internal/docs/auth-api/DOC.md` |
+| Team deploy guide | `internal/deploy` | `.../internal/docs/deploy/DOC.md` |
 
 ---
 
 ## Step 4 — Write the File
 
+**Always save the file as `DOC.md`** inside `author/docs/name/`.
+
+```
+✅ correct:  ./zapsign/docs/send-document/DOC.md
+❌ wrong:    ./zapsign/docs/send-document.md
+❌ wrong:    ./docs/zapsign-send-document.md
+```
+
 ### Frontmatter (required)
 
-Every file must start with YAML frontmatter. Minimum required fields: `id` and `title`.
+Every file must start with YAML frontmatter. Required fields are `name`,
+`description`, and the metadata fields defined in the Content Guide.
 
 ```markdown
 ---
-id: <namespaced-id>
-title: <Human Readable Title>
+name: <entry-name>
 description: <one-line summary of what this doc covers>
-tags: [tag1, tag2, tag3]
-lang: [js, py]
-version: "1.0"
+metadata:
+  languages: <language>
+  versions: <package-version>
+  revision: 1
+  updated-on: "YYYY-MM-DD"
+  source: <official|maintainer|community>
+  tags: "tag1,tag2,tag3"
 ---
 ```
 
@@ -113,12 +129,14 @@ version: "1.0"
 
 | Field | Required | Type | Description |
 |-------|----------|------|-------------|
-| `id` | ✅ | string | Namespaced identifier. Must be unique within the store. |
-| `title` | ✅ | string | Human-readable name shown in `opencontext list` |
-| `description` | recommended | string | One-line summary for search results |
-| `tags` | recommended | string[] | Keywords for `opencontext search` |
-| `lang` | optional | string[] | Language variants: `js`, `py`, or both |
-| `version` | optional | string | Document version (freeform) |
+| `name` | ✅ | string | Entry name (used in id: `author/name`). |
+| `description` | ✅ | string | One-line summary for search results |
+| `metadata.languages` | ✅ | string | Language of this variant |
+| `metadata.versions` | ✅ | string | Package/SDK version covered |
+| `metadata.revision` | ✅ | number | Content revision number |
+| `metadata.updated-on` | ✅ | string | Last update date (YYYY-MM-DD) |
+| `metadata.source` | ✅ | string | Trust level: official, maintainer, community |
+| `metadata.tags` | optional | string | Comma-separated tags |
 
 ### Body Structure
 
@@ -126,12 +144,15 @@ Use this structure as the default template. Adapt sections to fit the content ty
 
 ```markdown
 ---
-id: <id>
-title: <title>
+name: <name>
 description: <description>
-tags: [<tags>]
-lang: [<lang>]
-version: "1.0"
+metadata:
+  languages: <language>
+  versions: <package-version>
+  revision: 1
+  updated-on: "YYYY-MM-DD"
+  source: <official|maintainer|community>
+  tags: "tag1,tag2"
 ---
 
 # <title>
@@ -146,9 +167,9 @@ version: "1.0"
 
 <Minimal working example — the fastest path to getting something working.>
 
-```<lang>
+\`\`\`<lang>
 <code example>
-```
+\`\`\`
 
 ## Key Concepts
 
@@ -189,12 +210,15 @@ Use the appropriate template based on what is being documented.
 
 ```markdown
 ---
-id: <provider>/<category>/<doc-name>
-title: <Provider> <Feature> API
+name: <entry-name>
 description: How to use <feature> from <provider>
-tags: [<provider>, api, <feature>]
-lang: [js, py]
-version: "1.0"
+metadata:
+  languages: <language>
+  versions: <package-version>
+  revision: 1
+  updated-on: "YYYY-MM-DD"
+  source: <official|maintainer|community>
+  tags: "<provider>,api,<feature>"
 ---
 
 # <Provider> <Feature> API
@@ -219,17 +243,17 @@ version: "1.0"
 
 ## Request Example
 
-```python
+\`\`\`python
 <minimal working request>
-```
+\`\`\`
 
 ## Response Shape
 
-```json
+\`\`\`json
 {
   "<field>": "<type and description>"
 }
-```
+\`\`\`
 
 ## Error Handling
 
@@ -247,11 +271,15 @@ version: "1.0"
 
 ```markdown
 ---
-id: internal/<domain>/<service-name>
-title: <Service Name>
+name: <service-name>
 description: Internal documentation for the <service> service
-tags: [internal, <domain>, <service>]
-version: "1.0"
+metadata:
+  languages: <language>
+  versions: <package-version>
+  revision: 1
+  updated-on: "YYYY-MM-DD"
+  source: maintainer
+  tags: "internal,<domain>,<service>"
 ---
 
 # <Service Name>
@@ -291,11 +319,15 @@ version: "1.0"
 
 ```markdown
 ---
-id: team/conventions/<topic>
-title: <Convention Name>
+name: <topic>
 description: Team standard for <topic>
-tags: [convention, team, <topic>]
-version: "1.0"
+metadata:
+  languages: <language>
+  versions: <package-version>
+  revision: 1
+  updated-on: "YYYY-MM-DD"
+  source: maintainer
+  tags: "convention,team,<topic>"
 ---
 
 # <Convention Name>
@@ -313,14 +345,14 @@ version: "1.0"
 ## Examples
 
 **Correct:**
-```
+\`\`\`
 <example>
-```
+\`\`\`
 
 **Incorrect:**
-```
+\`\`\`
 <example>
-```
+\`\`\`
 
 ## Exceptions
 
@@ -331,19 +363,22 @@ version: "1.0"
 
 ## Step 5 — Register with OpenContext
 
-After writing and saving the file, register it:
+After writing and saving `DOC.md` inside the `author/docs/name/` folder, register it:
 
 ```bash
 # Register in local (personal) store
-opencontext add ./path/to/doc.md
+opencontext add ./<author>/docs/<name>/DOC.md
+
+# Example:
+opencontext add ./zapsign/docs/send-document/DOC.md
 
 # Register in team store (./content/ in the repo)
-opencontext add ./path/to/doc.md --team
+opencontext add ./zapsign/docs/send-document/DOC.md --team
 ```
 
 **What happens on `opencontext add`:**
-- The frontmatter `id` is read to determine the destination path
-- Subdirectories are created automatically based on `/` in the id
+- The `author/docs/.../DOC.md` path determines the destination
+- Subdirectories are created automatically based on the provided structure
 - The file is copied to the correct store location
 - The doc becomes immediately searchable via `opencontext search`
 
@@ -351,9 +386,9 @@ opencontext add ./path/to/doc.md --team
 
 | Error | Cause | Fix |
 |-------|-------|-----|
-| `Missing required field: id` | Frontmatter incomplete | Add `id` field to frontmatter |
-| `Missing required field: title` | Frontmatter incomplete | Add `title` field to frontmatter |
-| `File already exists` | Id collision | Change the id or use a more specific namespace |
+| `Missing required field: name` | Frontmatter incomplete | Add `name` field to frontmatter |
+| `Missing required field: description` | Frontmatter incomplete | Add `description` field to frontmatter |
+| `File already exists` | Id collision | Change the entry name or author namespace |
 | `Invalid frontmatter` | YAML syntax error | Check for tabs (use spaces), unclosed quotes, special chars |
 
 ---
@@ -363,8 +398,8 @@ opencontext add ./path/to/doc.md --team
 Always confirm the doc is accessible after registering:
 
 ```bash
-# Fetch the doc back by id
-opencontext get <id>
+# Fetch the doc back by entry id
+opencontext get <author>/<name>
 
 # Confirm it appears in the list
 opencontext list --source local     # for personal docs
@@ -380,13 +415,13 @@ opencontext search "<one of your tags>"
 
 Before considering the doc complete, verify:
 
-- [ ] `id` is lowercase, uses hyphens, and follows the `domain/category/name` pattern
-- [ ] `title` is human-readable and descriptive
+- [ ] `name` is lowercase, uses hyphens, and is stable
+- [ ] File is saved as `DOC.md` inside `author/docs/name/`
 - [ ] `description` is one line and useful as a search snippet
 - [ ] `tags` include the provider name, content type, and key topics
 - [ ] Body has at least an Overview and one working code example
 - [ ] Gotchas section captures any non-obvious behavior discovered
-- [ ] `opencontext get <id>` returns the doc correctly after registration
+- [ ] `opencontext get <author>/<name>` returns the doc correctly after registration
 
 ---
 
@@ -394,18 +429,21 @@ Before considering the doc complete, verify:
 
 User request: *"Document how we use the Zapsign API to send documents for signature in Python."*
 
-**1. Define the id:** `zapsign/python/send-document`
+**1. Define the entry id:** `zapsign/send-document`
 
-**2. Write the file** as `./docs/zapsign-send-document.md`:
+**2. Create the folder and write the file** as `./zapsign/docs/send-document/DOC.md`:
 
 ```markdown
 ---
-id: zapsign/python/send-document
-title: Zapsign — Send Document for Signature (Python)
+name: send-document
 description: How to send a document for electronic signature using the Zapsign Python SDK
-tags: [zapsign, python, esign, documents]
-lang: [py]
-version: "1.0"
+metadata:
+  languages: python
+  versions: "1.0.0"
+  revision: 1
+  updated-on: "2026-01-01"
+  source: maintainer
+  tags: "zapsign,python,esign,documents"
 ---
 
 # Zapsign — Send Document for Signature (Python)
@@ -417,15 +455,15 @@ version: "1.0"
 Zapsign uses a bearer token. Store it in an environment variable and never
 hardcode it.
 
-```python
+\`\`\`python
 import os
 TOKEN = os.environ["ZAPSIGN_TOKEN"]
 headers = {"Authorization": f"Bearer {TOKEN}"}
-```
+\`\`\`
 
 ## Quick Start
 
-```python
+\`\`\`python
 import requests
 
 response = requests.post(
@@ -439,7 +477,7 @@ response = requests.post(
 )
 doc = response.json()
 print(doc["token"])  # use this token to track the document
-```
+\`\`\`
 
 ## Key Parameters
 
@@ -459,16 +497,16 @@ print(doc["token"])  # use this token to track the document
 
 ## Related
 
-- `opencontext get zapsign/python/zapsign-docs` — full SDK overview
+- `opencontext get zapsign/zapsign-docs` — full SDK overview
 ```
 
 **3. Register:**
 ```bash
-opencontext add ./docs/zapsign-send-document.md
+opencontext add ./zapsign/docs/send-document/DOC.md
 ```
 
 **4. Verify:**
 ```bash
-opencontext get zapsign/python/send-document
+opencontext get zapsign/send-document
 opencontext search "zapsign"
 ```

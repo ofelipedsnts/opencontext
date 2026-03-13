@@ -7,7 +7,16 @@ import { execa } from "execa";
 import { getConfig } from "../utils/config.js";
 import { getCacheDir } from "../utils/paths.js";
 
-const getCachePath = (id) => join(getCacheDir(), `${id.replaceAll("/", "__")}.md`);
+const getCachePath = (id, flags = {}) => {
+  const parts = [id.replaceAll("/", "__")];
+  if (flags.lang) {
+    parts.push(`lang-${flags.lang}`);
+  }
+  if (flags.version) {
+    parts.push(`version-${flags.version}`);
+  }
+  return join(getCacheDir(), `${parts.join("__")}.md`);
+};
 
 const isEnabled = () => {
   const config = getConfig();
@@ -33,8 +42,8 @@ const isCacheValid = async (filePath, ttlSeconds) => {
   }
 };
 
-const readCache = async (id, ttlSeconds) => {
-  const cachePath = getCachePath(id);
+const readCache = async (id, ttlSeconds, flags) => {
+  const cachePath = getCachePath(id, flags);
   if (!(await isCacheValid(cachePath, ttlSeconds))) {
     return null;
   }
@@ -42,10 +51,10 @@ const readCache = async (id, ttlSeconds) => {
   return readFile(cachePath, "utf8");
 };
 
-const writeCache = async (id, content) => {
+const writeCache = async (id, content, flags) => {
   const cacheDir = getCacheDir();
   await mkdir(cacheDir, { recursive: true });
-  await writeFile(getCachePath(id), content, "utf8");
+  await writeFile(getCachePath(id, flags), content, "utf8");
 };
 
 const get = async (id, flags = {}) => {
@@ -57,7 +66,7 @@ const get = async (id, flags = {}) => {
   const useCache = chub.cache && !flags.noCache;
 
   if (useCache) {
-    const cached = await readCache(id, chub.cacheTTL);
+    const cached = await readCache(id, chub.cacheTTL, flags);
     if (cached) {
       return cached;
     }
@@ -67,11 +76,14 @@ const get = async (id, flags = {}) => {
   if (flags.lang) {
     args.push("--lang", flags.lang);
   }
+  if (flags.version) {
+    args.push("--version", flags.version);
+  }
 
   const { stdout } = await execa("chub", args);
 
   if (useCache) {
-    await writeCache(id, stdout);
+    await writeCache(id, stdout, flags);
   }
 
   return stdout;

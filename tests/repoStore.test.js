@@ -13,10 +13,21 @@ describe("repoStore", () => {
 
   beforeEach(async () => {
     tempDir = await makeTempDir();
-    await mkdir(join(tempDir, "content"), { recursive: true });
-    await copyFile(fixture("doc-alpha.md"), join(tempDir, "content", "doc-alpha.md"));
-    await copyFile(fixture("doc-beta.md"), join(tempDir, "content", "doc-beta.md"));
-    await copyFile(fixture("invalid.md"), join(tempDir, "content", "invalid.md"));
+    await mkdir(join(tempDir, "content", "acme", "docs", "alpha"), { recursive: true });
+    await mkdir(join(tempDir, "content", "acme", "docs", "beta"), { recursive: true });
+    await mkdir(join(tempDir, "content", "acme", "docs", "invalid"), { recursive: true });
+    await copyFile(
+      fixture("acme/docs/alpha/DOC.md"),
+      join(tempDir, "content", "acme", "docs", "alpha", "DOC.md")
+    );
+    await copyFile(
+      fixture("acme/docs/beta/DOC.md"),
+      join(tempDir, "content", "acme", "docs", "beta", "DOC.md")
+    );
+    await copyFile(
+      fixture("acme/docs/invalid/DOC.md"),
+      join(tempDir, "content", "acme", "docs", "invalid", "DOC.md")
+    );
     originalCwd = process.cwd();
     process.chdir(tempDir);
     vi.resetModules();
@@ -32,20 +43,20 @@ describe("repoStore", () => {
     const docs = await store.list();
     const ids = docs.map((doc) => doc.id).sort();
 
-    expect(ids).toEqual(["doc-alpha", "doc-beta"]);
+    expect(ids).toEqual(["acme/alpha", "acme/beta"]);
   });
 
   it("gets a document by id", async () => {
     const store = await import("../src/store/repoStore.js");
-    const doc = await store.get("doc-beta");
+    const doc = await store.get("acme/beta");
 
-    expect(doc.metadata.id).toBe("doc-beta");
+    expect(doc.metadata.id).toBe("acme/beta");
     expect(doc.content).toContain("Beta content");
   });
 
   it("checks document existence", async () => {
     const store = await import("../src/store/repoStore.js");
-    expect(await store.exists("doc-alpha")).toBe(true);
+    expect(await store.exists("acme/alpha")).toBe(true);
     expect(await store.exists("missing")).toBe(false);
   });
 
@@ -54,6 +65,6 @@ describe("repoStore", () => {
     const results = await store.search("alpha");
 
     expect(results).toHaveLength(1);
-    expect(results[0].id).toBe("doc-alpha");
+    expect(results[0].id).toBe("acme/alpha");
   });
 });

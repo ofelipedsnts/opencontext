@@ -4,19 +4,21 @@ import * as chubBridge from "./chub/chubBridge.js";
 
 const stripPrefix = (id, prefix) => id.slice(prefix.length);
 
-const isProviderId = (id) => id.includes("/");
-
 const resolveFromSource = async (source, id, options) => {
   if (source === "local") {
-    return localStore.get(id);
+    return localStore.get(id, options);
   }
 
   if (source === "team") {
-    return repoStore.get(id);
+    return repoStore.get(id, options);
   }
 
   if (source === "chub") {
-    return chubBridge.get(id, { lang: options?.lang, noCache: options?.noCache });
+    return chubBridge.get(id, {
+      lang: options?.lang,
+      version: options?.version,
+      noCache: options?.noCache
+    });
   }
 
   throw new Error(`Unknown source: ${source}`);
@@ -33,10 +35,6 @@ const resolve = async (id, options = {}) => {
 
   if (id.startsWith("team/")) {
     return resolveFromSource("team", stripPrefix(id, "team/"), options);
-  }
-
-  if (isProviderId(id)) {
-    return resolveFromSource("chub", id, options);
   }
 
   if (await localStore.exists(id)) {

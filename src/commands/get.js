@@ -6,17 +6,34 @@ import { isJsonMode, outputJson } from "../utils/jsonOutput.js";
 import { warn } from "../utils/logger.js";
 
 const formatMetadata = (metadata) => {
-  const lines = [
-    `id: ${metadata.id}`,
-    `title: ${metadata.title}`
-  ];
+  const lines = [`id: ${metadata.id}`, `name: ${metadata.name}`];
 
   if (metadata.description) {
     lines.push(`description: ${metadata.description}`);
   }
 
-  if (metadata.tags) {
-    lines.push(`tags: ${Array.isArray(metadata.tags) ? metadata.tags.join(", ") : metadata.tags}`);
+  if (metadata.metadata?.languages) {
+    lines.push(`language: ${metadata.metadata.languages}`);
+  }
+
+  if (metadata.metadata?.versions) {
+    lines.push(`version: ${metadata.metadata.versions}`);
+  }
+
+  if (metadata.metadata?.revision !== undefined) {
+    lines.push(`revision: ${metadata.metadata.revision}`);
+  }
+
+  if (metadata.metadata?.["updated-on"]) {
+    lines.push(`updated-on: ${metadata.metadata["updated-on"]}`);
+  }
+
+  if (metadata.metadata?.source) {
+    lines.push(`source: ${metadata.metadata.source}`);
+  }
+
+  if (metadata.metadata?.tags?.length) {
+    lines.push(`tags: ${metadata.metadata.tags.join(", ")}`);
   }
 
   return lines.join("\n");
@@ -45,7 +62,8 @@ const register = (program) => {
     .command("get")
     .description("Fetch a documentation entry")
     .argument("<id>", "Document id")
-    .option("--lang <lang>", "Language filter for chub")
+    .option("--lang <lang>", "Language filter for docs and chub")
+    .option("--version <version>", "Version filter for docs")
     .option("--source <source>", "Force source: local, team, chub, cascade", "cascade")
     .option("--no-cache", "Bypass chub cache")
     .option("--json", "Output JSON")

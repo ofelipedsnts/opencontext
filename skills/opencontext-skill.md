@@ -9,7 +9,7 @@ description: >
   an API, follow internal conventions, implement an integration, or asks "how do
   we do X here". Do not skip this step — fetching context before coding
   significantly reduces hallucinated APIs and incorrect implementations.
-  Use opencontext search before opencontext get whenever the exact doc id is unknown.
+  Use opencontext search before opencontext get whenever the exact entry id is unknown.
 ---
 
 # OpenContext Skill (`opencontext`)
@@ -32,9 +32,9 @@ When no prefix is given, opencontext searches in cascade: local → team → chu
 **Always follow this order before writing code:**
 
 1. **Search** for relevant docs — `opencontext search <query>`
-2. **Fetch** the relevant doc — `opencontext get <id>`
+2. **Fetch** the relevant doc — `opencontext get <author>/<name>`
 3. **Read and apply** the returned content
-4. **Annotate** if you discover something missing — `opencontext annotate <id> "<note>"`
+4. **Annotate** if you discover something missing — `opencontext annotate <author>/<name> "<note>"`
 
 ---
 
@@ -50,7 +50,7 @@ opencontext init
 
 ### `opencontext search <query>`
 Searches across all sources (local, team, chub). Always run this first when
-you don't know the exact doc id.
+you don't know the exact entry id.
 
 ```bash
 opencontext search "authentication"
@@ -65,17 +65,17 @@ opencontext search "rate limits" --json
 
 ---
 
-### `opencontext get <id>`
-Fetches a document by id. The id comes from the frontmatter of the `.md` file.
-Ids support `/` as a path separator, which maps to subdirectories.
+### `opencontext get <author>/<name>`
+Fetches a document by entry id. The `name` comes from the DOC frontmatter and the
+`author` comes from the directory structure (`author/docs/.../DOC.md`).
 
 ```bash
 # Personal/local doc
-opencontext get local/auth-api
-opencontext get local/zapsign/python/zapsign-docs
+opencontext get local/acme/widgets
+opencontext get local/zapsign/sdk
 
 # Team doc
-opencontext get team/internal/infra/deploy
+opencontext get team/internal/deploy
 
 # Public doc via chub (no prefix needed — provider name acts as namespace)
 opencontext get openai/chat
@@ -83,11 +83,12 @@ opencontext get openai/chat --lang py
 opencontext get stripe/api --lang js
 
 # Cascade (tries local → team → chub automatically)
-opencontext get auth-api
+opencontext get acme/widgets
 ```
 
 **Flags:**
 - `--lang py|js` — language variant filter (passed to chub when delegating)
+- `--version <version>` — version filter for docs
 - `--source local|team|chub` — force a specific source, skip cascade
 - `--no-cache` — bypass cached chub results and fetch fresh
 - `--json` — return JSON with `{ metadata, content, source }` shape
@@ -107,24 +108,26 @@ opencontext list --json
 ---
 
 ### `opencontext add <path>`
-Adds a markdown file to the local store. The file must have valid YAML
-frontmatter with at minimum `id` and `title`. The `id` determines where the
-file is saved — each `/` creates a subdirectory.
+Adds a markdown file to the local store. The file must be a `DOC.md` or `SKILL.md`
+inside the required directory structure (author/docs/... or author/skills/...).
 
 ```bash
-opencontext add ./docs/auth-api.md            # adds to local private store
-opencontext add ./docs/deploy.md --team       # adds to ./content/ (team store)
+opencontext add ./acme/docs/widgets/DOC.md            # adds to local private store
+opencontext add ./acme/docs/deploy/DOC.md --team      # adds to ./content/ (team store)
 ```
 
-**Document format (required):**
+**DOC.md format (required):**
 ```markdown
 ---
-id: zapsign/python/zapsign-docs
-title: Zapsign Python SDK
+name: zapsign-docs
 description: How to use the Zapsign Python SDK
-tags: [zapsign, python, sdk]
-lang: [py]
-version: "1.0"
+metadata:
+  languages: python
+  versions: "1.0.0"
+  revision: 1
+  updated-on: "2026-01-01"
+  source: maintainer
+  tags: "zapsign,python,sdk"
 ---
 
 # Zapsign Python SDK
@@ -132,12 +135,11 @@ version: "1.0"
 Content here...
 ```
 
-Minimum required fields: `id`, `title`.
-Optional fields: `description`, `tags`, `lang`, `version`.
+Minimum required fields: `name`, `description`, and metadata fields.
 
 ---
 
-### `opencontext annotate <id> "<note>"`
+### `opencontext annotate <author>/<name> "<note>"`
 Attaches a local note to any document (local, team, or chub). Annotations
 persist across sessions and appear automatically on future `get` calls.
 Use this when you discover a gap, a workaround, or an important caveat.
@@ -183,25 +185,26 @@ opencontext config defaults.lang py       # set default language filter
 |------|--------|
 | `--source local\|team\|chub\|cascade` | Force a specific source |
 | `--lang py\|js` | Language filter (forwarded to chub) |
+| `--version <version>` | Version filter for docs |
 | `--no-cache` | Bypass chub cache |
 | `--json` | Machine-readable JSON output |
 
 ---
 
-## ID and Path Conventions
+## Entry ID and Path Conventions
 
-Ids use `/` as a namespace separator, which maps to filesystem subdirectories.
+Entry ids are `author/name`, derived from the directory and frontmatter.
 
-| Store | Base path | Id example | Resulting file |
-|-------|-----------|------------|----------------|
-| local | `~/.config/opencontext/private/` | `zapsign/python/zapsign-docs` | `~/.config/opencontext/private/zapsign/python/zapsign-docs.md` |
-| team | `./content/` | `internal/infra/deploy` | `./content/internal/infra/deploy.md` |
+| Store | Base path | Entry id | Resulting file |
+|-------|-----------|----------|----------------|
+| local | `~/.config/opencontext/private/` | `acme/widgets` | `~/.config/opencontext/private/acme/docs/widgets/DOC.md` |
+| team | `./content/` | `internal/deploy` | `./content/internal/docs/deploy/DOC.md` |
 
 **Routing rules:**
-- `local/<id>` → forces local store only
-- `team/<id>` → forces team store only
+- `local/<author>/<name>` → forces local store only
+- `team/<author>/<name>` → forces team store only
 - `<provider>/<doc>` (e.g. `openai/chat`) → delegated directly to chub
-- `<id>` with no prefix → cascade: local → team → chub
+- `<author>/<name>` with no prefix → cascade: local → team → chub
 
 ---
 
@@ -210,11 +213,11 @@ Ids use `/` as a namespace separator, which maps to filesystem subdirectories.
 | Situation | Command to use |
 |-----------|---------------|
 | Don't know if docs exist | `opencontext search <query>` |
-| Internal API or private service | `opencontext get local/<id>` |
-| Team conventions, architecture decisions | `opencontext get team/<id>` |
+| Internal API or private service | `opencontext get local/<author>/<name>` |
+| Team conventions, architecture decisions | `opencontext get team/<author>/<name>` |
 | Public API (OpenAI, Stripe, etc.) | `opencontext get <provider>/<doc>` |
-| Unsure of source | `opencontext get <id>` (cascade) |
-| Found a missing detail while coding | `opencontext annotate <id> "<note>"` |
+| Unsure of source | `opencontext get <author>/<name>` (cascade) |
+| Found a missing detail while coding | `opencontext annotate <author>/<name> "<note>"` |
 
 ---
 
@@ -223,13 +226,13 @@ Ids use `/` as a namespace separator, which maps to filesystem subdirectories.
 ```bash
 # Before implementing an auth flow
 opencontext search "authentication"
-opencontext get local/auth-api
+opencontext get local/acme/widgets
 
 # Before calling the OpenAI API in Python
 opencontext get openai/chat --lang py
 
 # Before deploying — check team guide
-opencontext get team/internal/infra/deploy
+opencontext get team/internal/deploy
 
 # You found a gotcha with the Stripe webhook
 opencontext annotate stripe/api "Use express.raw() middleware, not express.json()"

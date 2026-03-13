@@ -24,21 +24,21 @@ npm install -g .
 
 ```bash
 opencontext init
-opencontext add ./docs/auth-api.md
-opencontext get auth-api
+opencontext add ./acme/docs/auth-api/DOC.md
+opencontext get acme/auth-api
 opencontext search "authentication"
 ```
 
 ## Commands
 
 - `opencontext init` — create local config and directories
-- `opencontext add <path>` — add a markdown file to the local store
-- `opencontext add <path> --team` — add a markdown file to the repo `content/` directory
-- `opencontext get <id>` — fetch documentation (local, team, or chub)
+- `opencontext add <path>` — add a DOC.md/SKILL.md file to the local store
+- `opencontext add <path> --team` — add a DOC.md/SKILL.md file to the repo `content/` directory
+- `opencontext get <author>/<name>` — fetch documentation (local, team, or chub)
 - `opencontext list` — list available documentation (local and team)
 - `opencontext search <query>` — search across sources
-- `opencontext annotate <id> <note>` — add a local note
-- `opencontext annotate <id> --clear` — clear notes for a document
+- `opencontext annotate <author>/<name> <note>` — add a local note
+- `opencontext annotate <author>/<name> --clear` — clear notes for a document
 - `opencontext annotate --list` — list all annotations
 - `opencontext sync init <git-url>` — configure team sync
 - `opencontext sync pull` — pull updates from remote
@@ -48,6 +48,7 @@ opencontext search "authentication"
 ### Global flags
 
 - `--lang <py|js>` — language filter for chub
+- `--version <version>` — version filter for docs
 - `--source <local|team|chub|cascade>` — force a source
 - `--no-cache` — bypass chub cache
 - `--json` — JSON output for agent integration
@@ -79,16 +80,22 @@ the agent to use `opencontext` before writing code.
 
 ## Document format
 
-Markdown files must include YAML frontmatter with at least `id` and `title`:
+Docs follow the Content Guide format. Each entry lives in a `DOC.md` file with
+frontmatter fields like `name`, `description`, and `metadata.*`.
+
+Entry ids are `author/name` (author from the directory, name from frontmatter).
 
 ```markdown
 ---
-id: auth-api
-title: Auth API
+name: auth-api
 description: Authentication service documentation
-tags: [auth, api]
-lang: [js, py]
-version: "1.0"
+metadata:
+  languages: javascript
+  versions: "1.0.0"
+  revision: 1
+  updated-on: "2026-01-01"
+  source: maintainer
+  tags: "auth,api"
 ---
 
 # Auth API
@@ -98,53 +105,57 @@ version: "1.0"
 
 ## Folder structure conventions
 
-OpenContext supports namespaced ids with `/`, which map directly to folders.
-Use this to keep docs organized by provider, team, or topic.
+OpenContext follows the Content Guide directory structure. Content is organized by
+author (vendor/org), then by type (`docs` or `skills`), then by entry name.
+
+```
+<author>/
+  docs/
+    <entry-name>/
+      DOC.md
+  skills/
+    <entry-name>/
+      SKILL.md
+```
 
 ### Local (personal) store
 
 - Base directory: `~/.config/opencontext/private/`
-- Id rule: each `/` in `id` becomes a subfolder
-- File rule: `id` + `.md`
+- Path rule: `<author>/docs/<entry-name>/DOC.md`
 
 Example:
 
-```markdown
----
-id: zapsign/python/zapsign-docs
-title: Zapsign Python Docs
----
 ```
-
-Resulting path:
-
-```
-~/.config/opencontext/private/zapsign/python/zapsign-docs.md
+~/.config/opencontext/private/acme/docs/widgets/DOC.md
 ```
 
 ### Team (repo) store
 
 - Base directory: `./content/`
-- Same id rule: `/` creates subfolders
-- File rule: `id` + `.md`
+- Same structure as local
 
 Example:
 
-```markdown
----
-id: internal/infra/deploy
-title: Deploy Guide
----
+```
+./content/acme/docs/widgets/DOC.md
 ```
 
-Resulting path:
+### Multi-language docs
 
 ```
-./content/internal/infra/deploy.md
+acme/docs/widgets/javascript/DOC.md
+acme/docs/widgets/python/DOC.md
+```
+
+### Multi-version docs
+
+```
+acme/docs/widgets/v1/DOC.md
+acme/docs/widgets/v2/DOC.md
 ```
 
 ### Add command behavior
 
-- `opencontext add <path>` uses the frontmatter `id` and creates folders automatically.
-- `opencontext add <path> --team` behaves the same but inside `./content/`.
-- If you pass a custom id in the future, it must match the frontmatter `id`.
+- `opencontext add <path>` expects the path to include `/docs/` or `/skills/` and
+  copies it into the local store, preserving the structure.
+- `opencontext add <path> --team` does the same inside `./content/`.

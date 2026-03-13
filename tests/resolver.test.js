@@ -29,7 +29,7 @@ describe("resolver", () => {
 
     const result = await resolver.resolve("local/doc");
 
-    expect(localStore.get).toHaveBeenCalledWith("doc");
+    expect(localStore.get).toHaveBeenCalledWith("doc", {});
     expect(result.metadata.id).toBe("doc");
   });
 
@@ -40,7 +40,7 @@ describe("resolver", () => {
 
     const result = await resolver.resolve("team/doc");
 
-    expect(repoStore.get).toHaveBeenCalledWith("doc");
+    expect(repoStore.get).toHaveBeenCalledWith("doc", {});
     expect(result.metadata.id).toBe("doc");
   });
 
@@ -51,7 +51,11 @@ describe("resolver", () => {
 
     const result = await resolver.resolve("openai/chat");
 
-    expect(chub.get).toHaveBeenCalledWith("openai/chat", { lang: undefined, noCache: undefined });
+    expect(chub.get).toHaveBeenCalledWith("openai/chat", {
+      lang: undefined,
+      version: undefined,
+      noCache: undefined
+    });
     expect(result).toBe("doc");
   });
 
@@ -69,7 +73,7 @@ describe("resolver", () => {
 
     expect(localStore.exists).toHaveBeenCalledWith("doc");
     expect(repoStore.exists).toHaveBeenCalledWith("doc");
-    expect(repoStore.get).toHaveBeenCalledWith("doc");
+    expect(repoStore.get).toHaveBeenCalledWith("doc", {});
     expect(chub.get).not.toHaveBeenCalled();
     expect(result.metadata.id).toBe("doc");
   });
@@ -81,7 +85,11 @@ describe("resolver", () => {
 
     const result = await resolver.resolve("doc", { source: "chub" });
 
-    expect(chub.get).toHaveBeenCalledWith("doc", { lang: undefined, noCache: undefined });
+    expect(chub.get).toHaveBeenCalledWith("doc", {
+      lang: undefined,
+      version: undefined,
+      noCache: undefined
+    });
     expect(result).toBe("doc");
   });
 

@@ -34,21 +34,21 @@ describe("integration", () => {
 
   it("add -> get (local)", async () => {
     await runCli(["init"], { env });
-    await runCli(["add", fixture("doc-alpha.md")], { env });
+    await runCli(["add", fixture("acme/docs/alpha/DOC.md")], { env });
 
-    const { stdout } = await runCli(["get", "doc-alpha"], { env });
+    const { stdout } = await runCli(["get", "acme/alpha"], { env });
 
-    expect(stdout).toContain("Alpha Doc");
+    expect(stdout).toContain("name: alpha");
     expect(stdout).toContain("Alpha content");
   });
 
   it("add -> search (local)", async () => {
     await runCli(["init"], { env });
-    await runCli(["add", fixture("doc-beta.md")], { env });
+    await runCli(["add", fixture("acme/docs/beta/DOC.md")], { env });
 
     const { stdout } = await runCli(["search", "beta"], { env });
 
-    expect(stdout).toContain("doc-beta");
+    expect(stdout).toContain("acme/beta");
   });
 
   it("delegates get to chub", async () => {
@@ -82,10 +82,10 @@ if (cmd === "get") {
 
   it("annotate -> get includes annotations", async () => {
     await runCli(["init"], { env });
-    await runCli(["add", fixture("doc-alpha.md")], { env });
-    await runCli(["annotate", "doc-alpha", "Remember to update"], { env });
+    await runCli(["add", fixture("acme/docs/alpha/DOC.md")], { env });
+    await runCli(["annotate", "acme/alpha", "Remember to update"], { env });
 
-    const { stdout } = await runCli(["get", "doc-alpha"], { env });
+    const { stdout } = await runCli(["get", "acme/alpha"], { env });
 
     expect(stdout).toContain("Annotations:");
     expect(stdout).toContain("Remember to update");

@@ -3,8 +3,8 @@ import { isJsonMode, outputJson } from "../utils/jsonOutput.js";
 import { warn } from "../utils/logger.js";
 
 const formatRow = (doc, source) => {
-  const tags = Array.isArray(doc.tags) ? doc.tags.join(", ") : doc.tags ?? "";
-  return `${doc.id}\t${doc.title}\t${source}\t${tags}`;
+  const tags = doc.metadata?.tags?.length ? doc.metadata.tags.join(", ") : "";
+  return `${doc.id}\t${doc.name}\t${source}\t${tags}`;
 };
 
 const register = (program) => {
@@ -35,7 +35,7 @@ const register = (program) => {
           return;
         }
 
-        process.stdout.write("id\ttitle\tsource\ttags\n");
+        process.stdout.write("id\tname\tsource\ttags\n");
         process.stdout.write(`${rows.join("\n")}\n`);
       } catch (error) {
         warn(error?.message ?? String(error));

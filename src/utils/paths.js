@@ -3,7 +3,7 @@ import { join, resolve } from "node:path";
 
 const getBaseDir = () =>
   process.env.OPENCONTEXT_CONFIG_DIR ??
-  process.env.OPENCTX_CONFIG_DIR ??
+  process.env.opencontext_CONFIG_DIR ??
   join(homedir(), ".config", "opencontext");
 
 const getConfigDir = () => getBaseDir();

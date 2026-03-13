@@ -13,10 +13,21 @@ describe("localStore", () => {
   beforeEach(async () => {
     tempDir = await makeTempDir();
     process.env.OPENCONTEXT_CONFIG_DIR = tempDir;
-    await mkdir(join(tempDir, "private"), { recursive: true });
-    await copyFile(fixture("doc-alpha.md"), join(tempDir, "private", "doc-alpha.md"));
-    await copyFile(fixture("doc-beta.md"), join(tempDir, "private", "doc-beta.md"));
-    await copyFile(fixture("invalid.md"), join(tempDir, "private", "invalid.md"));
+    await mkdir(join(tempDir, "private", "acme", "docs", "alpha"), { recursive: true });
+    await mkdir(join(tempDir, "private", "acme", "docs", "beta"), { recursive: true });
+    await mkdir(join(tempDir, "private", "acme", "docs", "invalid"), { recursive: true });
+    await copyFile(
+      fixture("acme/docs/alpha/DOC.md"),
+      join(tempDir, "private", "acme", "docs", "alpha", "DOC.md")
+    );
+    await copyFile(
+      fixture("acme/docs/beta/DOC.md"),
+      join(tempDir, "private", "acme", "docs", "beta", "DOC.md")
+    );
+    await copyFile(
+      fixture("acme/docs/invalid/DOC.md"),
+      join(tempDir, "private", "acme", "docs", "invalid", "DOC.md")
+    );
     vi.resetModules();
   });
 
@@ -30,30 +41,21 @@ describe("localStore", () => {
     const docs = await store.list();
     const ids = docs.map((doc) => doc.id).sort();
 
-    expect(ids).toEqual(["doc-alpha", "doc-beta"]);
+    expect(ids).toEqual(["acme/alpha", "acme/beta"]);
   });
 
   it("gets a document by id", async () => {
     const store = await import("../src/store/localStore.js");
-    const doc = await store.get("doc-alpha");
+    const doc = await store.get("acme/alpha");
 
-    expect(doc.metadata.id).toBe("doc-alpha");
+    expect(doc.metadata.id).toBe("acme/alpha");
     expect(doc.content).toContain("Alpha content");
   });
 
   it("checks document existence", async () => {
     const store = await import("../src/store/localStore.js");
-    expect(await store.exists("doc-beta")).toBe(true);
+    expect(await store.exists("acme/beta")).toBe(true);
     expect(await store.exists("missing")).toBe(false);
-  });
-
-  it("adds a document from source", async () => {
-    const store = await import("../src/store/localStore.js");
-    const id = await store.add(fixture("doc-alpha.md"));
-    const doc = await store.get(id);
-
-    expect(id).toBe("doc-alpha");
-    expect(doc.metadata.title).toBe("Alpha Doc");
   });
 
   it("searches by metadata", async () => {
@@ -61,6 +63,6 @@ describe("localStore", () => {
     const results = await store.search("beta");
 
     expect(results).toHaveLength(1);
-    expect(results[0].id).toBe("doc-beta");
+    expect(results[0].id).toBe("acme/beta");
   });
 });

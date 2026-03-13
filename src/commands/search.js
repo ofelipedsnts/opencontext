@@ -22,14 +22,14 @@ const register = (program) => {
         if (result.local.length) {
           output.push("local:");
           for (const doc of result.local) {
-            output.push(`- ${doc.id}: ${doc.title}`);
+            output.push(`- ${doc.id}: ${doc.name}`);
           }
         }
 
         if (result.team.length) {
           output.push("team:");
           for (const doc of result.team) {
-            output.push(`- ${doc.id}: ${doc.title}`);
+            output.push(`- ${doc.id}: ${doc.name}`);
           }
         }
 
