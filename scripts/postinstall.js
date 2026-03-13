@@ -22,7 +22,7 @@ try {
   }
 
   message("OpenContext: local directories ready.");
-  message("Next steps: run `openctx init` to create config.json.");
+  message("Next steps: run `opencontext init` to create config.json.");
 } catch (error) {
   errorMessage("OpenContext: failed to create config directories.");
   errorMessage(error?.message ?? String(error));

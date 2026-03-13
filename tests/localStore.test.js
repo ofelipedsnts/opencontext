@@ -3,7 +3,7 @@ import { mkdtemp, rm, mkdir, copyFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
-const makeTempDir = async () => mkdtemp(join(tmpdir(), "openctx-local-"));
+const makeTempDir = async () => mkdtemp(join(tmpdir(), "opencontext-local-"));
 
 const fixture = (name) => resolve("tests", "fixtures", name);
 
@@ -12,7 +12,7 @@ describe("localStore", () => {
 
   beforeEach(async () => {
     tempDir = await makeTempDir();
-    process.env.OPENCTX_CONFIG_DIR = tempDir;
+    process.env.OPENCONTEXT_CONFIG_DIR = tempDir;
     await mkdir(join(tempDir, "private"), { recursive: true });
     await copyFile(fixture("doc-alpha.md"), join(tempDir, "private", "doc-alpha.md"));
     await copyFile(fixture("doc-beta.md"), join(tempDir, "private", "doc-beta.md"));
@@ -22,7 +22,7 @@ describe("localStore", () => {
 
   afterEach(async () => {
     await rm(tempDir, { recursive: true, force: true });
-    delete process.env.OPENCTX_CONFIG_DIR;
+    delete process.env.OPENCONTEXT_CONFIG_DIR;
   });
 
   it("lists valid documents", async () => {

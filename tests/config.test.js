@@ -3,20 +3,20 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const makeTempDir = async () => mkdtemp(join(tmpdir(), "openctx-"));
+const makeTempDir = async () => mkdtemp(join(tmpdir(), "opencontext-"));
 
 describe("config", () => {
   let tempDir;
 
   beforeEach(async () => {
     tempDir = await makeTempDir();
-    process.env.OPENCTX_CONFIG_DIR = tempDir;
+    process.env.OPENCONTEXT_CONFIG_DIR = tempDir;
     vi.resetModules();
   });
 
   afterEach(async () => {
     await rm(tempDir, { recursive: true, force: true });
-    delete process.env.OPENCTX_CONFIG_DIR;
+    delete process.env.OPENCONTEXT_CONFIG_DIR;
   });
 
   it("returns default config values", async () => {

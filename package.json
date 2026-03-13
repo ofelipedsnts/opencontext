@@ -4,7 +4,7 @@
   "description": "Unified context hub CLI for AI agents",
   "type": "module",
   "bin": {
-    "openctx": "./bin/openctx.js"
+    "opencontext": "./bin/opencontext.js"
   },
   "engines": {
     "node": ">=18"

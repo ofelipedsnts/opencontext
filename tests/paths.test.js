@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 const loadPaths = async (dir) => {
-  process.env.OPENCTX_CONFIG_DIR = dir;
+  process.env.OPENCONTEXT_CONFIG_DIR = dir;
   vi.resetModules();
   const module = await import("../src/utils/paths.js");
   return module;
@@ -9,7 +9,7 @@ const loadPaths = async (dir) => {
 
 describe("paths", () => {
   it("resolves config-based paths from env", async () => {
-    const baseDir = "/tmp/openctx-test";
+    const baseDir = "/tmp/opencontext-test";
     const {
       getConfigDir,
       getPrivateDir,

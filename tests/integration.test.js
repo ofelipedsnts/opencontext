@@ -6,10 +6,10 @@ import { join, resolve } from "node:path";
 
 const repoRoot = process.cwd();
 
-const makeTempDir = async () => mkdtemp(join(tmpdir(), "openctx-int-"));
+const makeTempDir = async () => mkdtemp(join(tmpdir(), "opencontext-int-"));
 
 const runCli = async (args, options) =>
-  execa("node", ["bin/openctx.js", ...args], {
+  execa("node", ["bin/opencontext.js", ...args], {
     cwd: repoRoot,
     ...options
   });
@@ -24,7 +24,7 @@ describe("integration", () => {
     tempDir = await makeTempDir();
     env = {
       ...process.env,
-      OPENCTX_CONFIG_DIR: tempDir
+      OPENCONTEXT_CONFIG_DIR: tempDir
     };
   });
 

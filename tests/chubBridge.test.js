@@ -3,7 +3,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const makeTempDir = async () => mkdtemp(join(tmpdir(), "openctx-chub-"));
+const makeTempDir = async () => mkdtemp(join(tmpdir(), "opencontext-chub-"));
 
 vi.mock("execa", () => ({
   execa: vi.fn()
@@ -15,7 +15,7 @@ describe("chubBridge", () => {
 
   beforeEach(async () => {
     tempDir = await makeTempDir();
-    process.env.OPENCTX_CONFIG_DIR = tempDir;
+    process.env.OPENCONTEXT_CONFIG_DIR = tempDir;
     vi.resetModules();
 
     const { execa } = await import("execa");
@@ -24,7 +24,7 @@ describe("chubBridge", () => {
 
   afterEach(async () => {
     await rm(tempDir, { recursive: true, force: true });
-    delete process.env.OPENCTX_CONFIG_DIR;
+    delete process.env.OPENCONTEXT_CONFIG_DIR;
     vi.clearAllMocks();
   });
 

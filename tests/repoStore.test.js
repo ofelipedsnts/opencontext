@@ -3,7 +3,7 @@ import { mkdtemp, rm, mkdir, copyFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
-const makeTempDir = async () => mkdtemp(join(tmpdir(), "openctx-repo-"));
+const makeTempDir = async () => mkdtemp(join(tmpdir(), "opencontext-repo-"));
 
 const fixture = (name) => resolve("tests", "fixtures", name);
 

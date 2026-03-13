@@ -9,7 +9,7 @@ Global install:
 
 ```bash
 npm install -g opencontext
-openctx init
+opencontext init
 ```
 
 Team install (repo mode):
@@ -23,27 +23,27 @@ npm install -g .
 ## Quick start
 
 ```bash
-openctx init
-openctx add ./docs/auth-api.md
-openctx get auth-api
-openctx search "authentication"
+opencontext init
+opencontext add ./docs/auth-api.md
+opencontext get auth-api
+opencontext search "authentication"
 ```
 
 ## Commands
 
-- `openctx init` — create local config and directories
-- `openctx add <path>` — add a markdown file to the local store
-- `openctx add <path> --team` — add a markdown file to the repo `content/` directory
-- `openctx get <id>` — fetch documentation (local, team, or chub)
-- `openctx list` — list available documentation (local and team)
-- `openctx search <query>` — search across sources
-- `openctx annotate <id> <note>` — add a local note
-- `openctx annotate <id> --clear` — clear notes for a document
-- `openctx annotate --list` — list all annotations
-- `openctx sync init <git-url>` — configure team sync
-- `openctx sync pull` — pull updates from remote
-- `openctx sync push` — push updates to remote
-- `openctx config` — show or update configuration
+- `opencontext init` — create local config and directories
+- `opencontext add <path>` — add a markdown file to the local store
+- `opencontext add <path> --team` — add a markdown file to the repo `content/` directory
+- `opencontext get <id>` — fetch documentation (local, team, or chub)
+- `opencontext list` — list available documentation (local and team)
+- `opencontext search <query>` — search across sources
+- `opencontext annotate <id> <note>` — add a local note
+- `opencontext annotate <id> --clear` — clear notes for a document
+- `opencontext annotate --list` — list all annotations
+- `opencontext sync init <git-url>` — configure team sync
+- `opencontext sync pull` — pull updates from remote
+- `opencontext sync push` — push updates to remote
+- `opencontext config` — show or update configuration
 
 ### Global flags
 
@@ -69,13 +69,13 @@ OpenContext delegates to `chub` when a document is not found locally or in the
 team repository. Example:
 
 ```bash
-openctx get openai/chat --lang py
+opencontext get openai/chat --lang py
 ```
 
 ## Agent skill
 
-Copy `skills/openctx-skill.md` into your agent skill directory and instruct
-the agent to use `openctx` before writing code.
+Copy `skills/opencontext-skill.md` into your agent skill directory and instruct
+the agent to use `opencontext` before writing code.
 
 ## Document format
 
@@ -145,6 +145,6 @@ Resulting path:
 
 ### Add command behavior
 
-- `openctx add <path>` uses the frontmatter `id` and creates folders automatically.
-- `openctx add <path> --team` behaves the same but inside `./content/`.
+- `opencontext add <path>` uses the frontmatter `id` and creates folders automatically.
+- `opencontext add <path> --team` behaves the same but inside `./content/`.
 - If you pass a custom id in the future, it must match the frontmatter `id`.

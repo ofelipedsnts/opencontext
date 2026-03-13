@@ -17,7 +17,7 @@ const pkg = require("../package.json");
 const program = new Command();
 
 program
-  .name("openctx")
+  .name("opencontext")
   .description("OpenContext CLI")
   .version(pkg.version);
 
