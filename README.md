@@ -1,14 +1,43 @@
 # OpenContext
 
+[![npm version](https://img.shields.io/npm/v/opencontext.svg)](https://www.npmjs.com/package/@ofelipedsnts/opencontext) 
+[![npm downloads](https://img.shields.io/npm/dm/opencontext.svg)](https://www.npmjs.com/package/@ofelipedsnts/opencontext)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
+
 OpenContext is a CLI that provides a unified context hub for AI agents. It combines
 private local documentation with public docs from the context-hub (chub).
+
+## How it works
+
+OpenContext is built for your coding agent to use.
+You can prompt your agent to call the CLI to fetch context before coding, or
+install a skill so it is used automatically.
+
+Examples:
+
+```text
+"Use the opencontext CLI to fetch the latest API docs before implementing this."
+"Run 'opencontext --help' and 'opencontext search <query>' to find the right doc."
+```
+
+If you are using an agent that supports skills, copy the skill file and tell the
+agent to use it for every coding task:
+
+```bash
+# Example for Claude Code
+mkdir -p ~/.claude/skills/opencontext
+cp ./skills/opencontext-skill.md ~/.claude/skills/opencontext/SKILL.md
+```
+
+OpenContext will try local docs first, then team docs, and finally chub when
+it needs public API documentation.
 
 ## Install
 
 Global install:
 
 ```bash
-npm install -g opencontext
+npm install -g @ofelipedsnts/opencontext
 opencontext init
 ```
 
@@ -21,6 +50,14 @@ npm install -g .
 ```
 
 ## Quick start
+
+## Usage modes
+
+OpenContext supports two usage modes:
+
+- **Personal mode** — manage your private docs locally for individual projects.
+- **Team mode** — manage shared internal documentation for teams and companies,
+  versioned inside the repository.
 
 ```bash
 opencontext init
