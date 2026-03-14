@@ -1,6 +1,6 @@
 ---
 name: content-guide
-description: Guia oficial para criar documentacoes no OpenContext
+description: Official guide for creating OpenContext documentation
 metadata:
   languages: markdown
   versions: "1.0.0"
@@ -12,15 +12,15 @@ metadata:
 
 # Content Guide
 
-> Use este guia para criar novas documentacoes no OpenContext com a estrutura e os locais corretos de armazenamento (local e team).
+> Use this guide to create new OpenContext documentation with the correct structure and storage locations (local and team).
 
-## Objetivo
+## Purpose
 
-Padronizar a criacao de documentacoes para que agentes e pessoas encontrem e reutilizem conteudo com consistencia, via `opencontext get` e `opencontext search`.
+Standardize documentation creation so agents and people can find and reuse content consistently via `opencontext get` and `opencontext search`.
 
-## Estrutura de diretorios
+## Directory structure
 
-OpenContext organiza conteudo por autor (vendor/org), tipo e nome de entrada:
+OpenContext organizes content by author (vendor/org), type, and entry name:
 
 ```
 <author>/
@@ -32,38 +32,38 @@ OpenContext organiza conteudo por autor (vendor/org), tipo e nome de entrada:
       SKILL.md
 ```
 
-### Documentos (DOC.md)
+### Documents (DOC.md)
 
-- `docs/` guarda documentacao
-- `DOC.md` e o arquivo obrigatorio do documento
-- `entry-name` deve ser igual ao `name` no frontmatter
+- `docs/` stores documentation
+- `DOC.md` is the required document file
+- `entry-name` must match the `name` in frontmatter
 
 ### Skills (SKILL.md)
 
-- `skills/` guarda skills de agentes
-- `SKILL.md` e o arquivo obrigatorio da skill
-- `entry-name` deve ser igual ao `name` no frontmatter
+- `skills/` stores agent skills
+- `SKILL.md` is the required skill file
+- `entry-name` must match the `name` in frontmatter
 
-## Estrutura do documento
+## Document structure
 
-Todo DOC deve ter frontmatter YAML no topo com os campos abaixo.
+Every DOC must have YAML frontmatter at the top with the fields below.
 
 ```markdown
 ---
 name: <entry-name>
-description: <descricao curta>
+description: <short description>
 metadata:
-  languages: <ex: python | javascript | markdown>
-  versions: "<versao>"
-  revision: <numero inteiro>
+  languages: <e.g. python | javascript | markdown>
+  versions: "<version>"
+  revision: <integer>
   updated-on: "YYYY-MM-DD"
-  source: <ex: maintainer | automated | vendor>
+  source: <e.g. maintainer | automated | vendor>
   tags: "tag1,tag2,tag3"
 ---
 
-# Titulo
+# Title
 
-> Frase curta de uso do documento.
+> One-line usage summary.
 
 ## Overview
 
@@ -78,45 +78,45 @@ metadata:
 ## Sources
 ```
 
-Regras:
-- `name` deve corresponder ao nome da pasta `entry-name`
-- `metadata.languages` e `metadata.versions` sao obrigatorios
-- use ASCII quando possivel
+Rules:
+- `name` must match the `entry-name` folder
+- `metadata.languages` and `metadata.versions` are required
+- use ASCII whenever possible
 
-## Identificador da entrada
+## Entry identifier
 
-O id da entrada e `author/name`. Exemplos:
+The entry id is `author/name`. Examples:
 
 - `acme/widgets`
 - `opencontext/content-guide`
 
-O `author` vem do diretorio raiz e o `name` vem do frontmatter.
+The `author` comes from the root directory and the `name` comes from frontmatter.
 
-## Locais de armazenamento
+## Storage locations
 
-### Local (privado)
+### Local (private)
 
 - Base: `~/.config/opencontext/private/`
-- Caminho: `<author>/docs/<entry-name>/DOC.md`
+- Path: `<author>/docs/<entry-name>/DOC.md`
 
-Exemplo:
+Example:
 ```
 ~/.config/opencontext/private/acme/docs/widgets/DOC.md
 ```
 
-### Team (repositorio)
+### Team (repository)
 
 - Base: `./content/`
-- Mesmo formato do local
+- Same format as local
 
-Exemplo:
+Example:
 ```
 ./content/acme/docs/widgets/DOC.md
 ```
 
-## Multi-language e multi-version
+## Multi-language and multi-version
 
-Caso voce queira separar por idioma ou versao, crie subpastas:
+If you need to split by language or version, create subfolders:
 
 ```
 acme/docs/widgets/javascript/DOC.md
@@ -126,11 +126,11 @@ acme/docs/widgets/v1/DOC.md
 acme/docs/widgets/v2/DOC.md
 ```
 
-## Fluxo recomendado
+## Recommended flow
 
-1. Crie o `DOC.md` na estrutura correta
-2. Verifique se o frontmatter esta completo
-3. Registre no OpenContext
+1. Create the `DOC.md` in the correct structure
+2. Verify the frontmatter is complete
+3. Register with OpenContext
 
 ```bash
 # local
@@ -140,7 +140,7 @@ opencontext add ./acme/docs/widgets/DOC.md
 opencontext add ./acme/docs/widgets/DOC.md --team
 ```
 
-4. Verifique com `opencontext get`:
+4. Verify with `opencontext get`:
 
 ```bash
 opencontext get acme/widgets --source local
@@ -149,9 +149,9 @@ opencontext get acme/widgets --source team
 
 ## Gotchas
 
-- `opencontext add` exige `DOC.md` ou `SKILL.md` com a estrutura correta
-- `name` no frontmatter deve bater com o nome da pasta
-- nao misture conteudo pessoal no repositorio team
+- `opencontext add` requires `DOC.md` or `SKILL.md` with the correct structure
+- `name` in frontmatter must match the folder name
+- do not mix personal content in the team repository
 
 ## Related
 
