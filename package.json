@@ -2,6 +2,22 @@
   "name": "opencontext",
   "version": "0.1.0",
   "description": "Unified context hub CLI for AI agents",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ofelipedsnts/opencontext.git"
+  },
+  "homepage": "https://github.com/ofelipedsnts/opencontext#readme",
+  "bugs": {
+    "url": "https://github.com/ofelipedsnts/opencontext/issues"
+  },
+  "keywords": [
+    "cli",
+    "ai",
+    "context",
+    "docs",
+    "knowledge"
+  ],
   "type": "module",
   "bin": {
     "opencontext": "./bin/opencontext.js"
